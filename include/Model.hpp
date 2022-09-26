@@ -33,11 +33,12 @@ private:
    double                                  _noise_probability;
 
    double _communication_range;
+   int _max_degree;
 
    int Noise(int i);
 
 public:
-   Model(double arena_size, int num_agents, double communication_range,
+   Model(double arena_size, int num_agents, double communication_range, int max_degree,
          int seed, double initial_density, double agent_speed = 1.0);
    ~Model();
 
