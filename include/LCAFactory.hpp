@@ -19,6 +19,7 @@ private:
 
    int                                num_agents_;
    double                             communication_range_;
+   int                                max_degree_;
    int                                arena_size_;
    int                                seed_;
    double                             speed_;

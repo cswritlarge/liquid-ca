@@ -69,6 +69,11 @@ void Model::RecordNetworkDensityOnly()
    _stats.NetworkSummaryOnly();
 }
 
+size_t Model::int2size_t(int val)
+{
+   return (val <= INT_MAx) ? (int)((ssize_t)val) : -1
+}
+
 double Model::CurrentDensity() const
 {
    return std::accumulate(_agent_states.begin(), _agent_states.end(), 0.0) / _agent_states.size();
@@ -76,11 +81,11 @@ double Model::CurrentDensity() const
 
 std::shared_ptr<NetworkSnapshot> Model::CurrentNetwork() const
 {
-   std::shared_ptr<NetworkSnapshot> snapshot = std::make_shared<NetworkSnapshot>(_agents.size());
-   for(int i = 0; i < _agents.size(); i++)
+   std::shared_ptr<NetworkSnapshot> snapshot = std::make_shared<NetworkSnapshot>(_agents.size());	     for(int i = 0; i < _agents.size(); i++)
    {	
       // temp vector of potential edges for i
-      std::vector<std::pair<int, int>> neighbors;
+      typedef std::vector<std::pair<int, int>> Neighbors;
+      Neighbors neighbors;
       for(int j = i+1; j < _agents.size(); j++)
       {
          if(_agents[i].Position().Within(_communication_range, _agents[j].Position()))
@@ -90,40 +95,46 @@ std::shared_ptr<NetworkSnapshot> Model::CurrentNetwork() const
                snapshot->AddEdge(i, j);
             }
             else
-            {*/
+            {*/		 
 	    neighbors.push_back(std::make_pair(i,j)); //j,i rather than i,j hopefully allows me to use sort() on the value of j
-               // AddEdge already adds i->j and j->i edge if I remember correctly...
-            /*}*/
+	    /*for (Neighbors::size_type l=0; l<neighbors.size(); l++)
+	    {   std::cout << neighbors.at(l).first << std::endl;}
+            //snapshot->AddEdge(i, j);   // AddEdge already adds i->j and j->i edge if I remember correctly...
+            }*/
          }
       }
    // loop through neighbor list with
       for(int k =  0; k < neighbors.size(); k++)
       {
-         /* Node degree limited connections
+         /*Node degree limited connections
          if(_conn_type == 'n')
          {*/
-         size_t num_nodes = _max_degree;
-         // randomly shuffle neighbors
+         //size_t num_nodes = _max_degree;
+         //int num_nodes = _max_degree;
+	 size_t num_nodes = int2size_t(_max_degree);
+	 // randomly shuffle neighbors
          std::random_device rd;
          std::mt19937 g(rd());
          std::shuffle(neighbors.begin(), neighbors.end(), g);
-         //auto it = neighbors.begin();
-         int it = 0;
+         //int it = 0;
+	 size_t it = 0;
          while(it < num_nodes)
          {
-            int u = std::get<0>(neighbors[it]);
-            int v = std::get<1>(neighbors[it]);
+            //int u = std::get<0>(neighbors[it]);
+            //int v = std::get<1>(neighbors[it]);
+            auto u = neighbors.at(it).first;
+            auto v = neighbors.at(it).second;
             snapshot->AddEdge(u, v);
             // neighbors.erase(index of chosen tuple);
             it++;
          }
-         /*}
-         // Rentian connections
+      }
+         /* Rentian connections
          else if(_conn_type == 'r')
          {
             connect build edge i, j with probability inversely propotional to distance between i and j
-         }*/
-       }
+         }
+       }*/
    }
    return snapshot;
 }

@@ -11,6 +11,7 @@
 LCAFactory::LCAFactory() :
    num_agents_(255),
    communication_range_(5),
+   max_degree_(5),	
    arena_size_(100),
    speed_(1),
    seed_(-1),
@@ -29,6 +30,7 @@ int LCAFactory::Init(int argc, char** argv)
    static struct option long_options[] =
       {
          {"communication-range", required_argument, 0,            'r'},
+	 {"max-degree",          required_argument, 0,            'b'},
          {"num-agents",          required_argument, 0,            'n'},
          {"arena-size",          required_argument, 0,            'a'},
          {"speed",               required_argument, 0,            's'},
@@ -45,7 +47,7 @@ int LCAFactory::Init(int argc, char** argv)
    char opt_char;
    std::ifstream file;
    TotalisticRule r;
-   while((opt_char = getopt_long(argc, argv, "r:n:a:s:S:c:R:T:",
+   while((opt_char = getopt_long(argc, argv, "r:b:n:a:s:S:c:R:T:",
                                  long_options, &option_index)) != -1)
    {
       std::stringstream message;
@@ -54,6 +56,10 @@ int LCAFactory::Init(int argc, char** argv)
       case 'd':
          pdark_ = atof(optarg);
          break;
+      
+      case 'b':
+         max_degree_ = atoi(optarg);
+         break;	 
 
       case 'i':
          pinteractive_ = atof(optarg);
@@ -134,6 +140,7 @@ std::unique_ptr<LCA> LCAFactory::Create(double initial_density)
    Model model(arena_size_,
                num_agents_,
                communication_range_,
+	       max_degree_,
                seed,
                initial_density,
                speed_);

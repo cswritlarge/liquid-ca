@@ -50,6 +50,9 @@ public:
     */
    void SetPositionalState(double initial_density);
 
+   /* cast int to size_t - used in CurrentNetwork() */
+   size_t int2size_t(int val);
+
    /**
     * Get the current density of the model (ie. proportion of black
     * states to white states).
